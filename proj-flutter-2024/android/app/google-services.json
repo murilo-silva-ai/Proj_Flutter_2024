@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "44058728431",
+    "project_id": "projeto-flutter-2024",
+    "storage_bucket": "projeto-flutter-2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44058728431:android:6d94cc369f575e4b39081a",
+        "android_client_info": {
+          "package_name": "app.mensagens.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUZW3XiHGABFI-XjxOCkGboH9AWm0CypY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
