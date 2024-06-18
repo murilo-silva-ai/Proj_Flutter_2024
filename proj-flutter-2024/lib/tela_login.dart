@@ -15,9 +15,9 @@ class _TelaLoginState extends State<TelaLogin> {
   final _chaveForm = GlobalKey<FormState>();
   var _email = '';
   var _senha = '';
-  var _confirmacaoSenha = '';
   var _nomeUsuario = '';
   var _modoLogin = true;
+  String _tipoUsuarioSelecionado = 'Aluno';
   static const List<String> _tipoUsuario = <String>[
     'Aluno',
     'Professor',
@@ -46,7 +46,6 @@ class _TelaLoginState extends State<TelaLogin> {
                     child: Column(
                       children: [
                         const Padding(padding: EdgeInsets.only(top: 10)),
-                        // Adicione os novos campos de cadastro aqui
                         if (!_modoLogin) ...[
                           Row(
                             children: [
@@ -54,16 +53,16 @@ class _TelaLoginState extends State<TelaLogin> {
                                 children: [
                                   SizedBox(
                                     width: 165,
-                                    child: TextField(
+                                    child: TextFormField(
                                       obscureText: false,
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
                                         labelText: 'Usuário',
                                       ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _nomeUsuario = value;
-                                        });
+                                      onSaved: (valor) {
+                                        if (valor != null) {
+                                          _nomeUsuario = valor;
+                                        }
                                       },
                                     ),
                                   ),
@@ -76,7 +75,7 @@ class _TelaLoginState extends State<TelaLogin> {
                                           EdgeInsets.only(left: 5, right: 2))
                                 ],
                               ),
-                              Column(
+                              const Column(
                                 children: [
                                   SizedBox(
                                     width: 150,
@@ -91,46 +90,37 @@ class _TelaLoginState extends State<TelaLogin> {
                         ],
                         Column(
                           children: [
-                            const SizedBox(
+                            SizedBox(
                               width: 500,
-                              child: TextField(
+                              child: TextFormField(
                                 obscureText: false,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'E-mail',
                                 ),
+                                onSaved: (valorDigitado) {
+                                  if (valorDigitado != null) {
+                                    _email = valorDigitado;
+                                  }
+                                },
                               ),
                             ),
                             const Padding(padding: EdgeInsets.only(top: 10)),
-                            const SizedBox(
+                            SizedBox(
                               width: 500,
-                              child: TextField(
+                              child: TextFormField(
                                 obscureText: true,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Senha',
                                 ),
+                                onSaved: (valor) {
+                                  if (valor != null) {
+                                    _senha = valor;
+                                  }
+                                },
                               ),
                             ),
-                            // Adicione os novos campos de cadastro aqui
-                            if (!_modoLogin) ...[
-                              const Padding(padding: EdgeInsets.only(top: 10)),
-                              SizedBox(
-                                width: 500,
-                                child: TextField(
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Confirmação de Senha',
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _confirmacaoSenha = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                         const Padding(padding: EdgeInsets.only(bottom: 5)),
@@ -155,20 +145,8 @@ class _TelaLoginState extends State<TelaLogin> {
                                           .signInWithEmailAndPassword(
                                               email: _email, password: _senha);
                                     } else {
-                                      // Validação adicional de senha
-                                      if (_senha != _confirmacaoSenha) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content:
-                                                Text('As senhas não coincidem'),
-                                          ),
-                                        );
-                                        return;
-                                      }
-
                                       print(
-                                          'Usuario $_nomeUsuario criado com email $_email e senha $_senha');
+                                          'Usuario $_nomeUsuario criado com email $_email e senha $_senha. Tipo de usuario: $_tipoUsuarioSelecionado');
                                       final credenciaisUsuario =
                                           await _firebaseAuth
                                               .createUserWithEmailAndPassword(
@@ -180,8 +158,9 @@ class _TelaLoginState extends State<TelaLogin> {
                                           .doc(credenciaisUsuario.user!.uid)
                                           .set({
                                         'email': _email,
-                                        'isAdmin': false,
+                                        'senha': _senha,
                                         'usuario': _nomeUsuario,
+                                        'tipoUsuario': _tipoUsuarioSelecionado
                                       });
                                     }
                                   } on FirebaseAuthException catch (error) {
@@ -207,18 +186,14 @@ class _TelaLoginState extends State<TelaLogin> {
                                   backgroundColor:
                                       const Color.fromRGBO(217, 148, 38, 1),
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 10), // Espaçamento interno
+                                      horizontal: 20, vertical: 10),
                                   textStyle: const TextStyle(
-                                    fontSize: 14, // Tamanho da fonte do texto
-                                    fontWeight:
-                                        FontWeight.normal, // Estilo da fonte
-                                    color: Color.fromARGB(
-                                        255, 0, 0, 0), // Cor do texto
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
+                                    color: Color.fromARGB(255, 0, 0, 0),
                                   ),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        3), // Arredondamento das bordas
+                                    borderRadius: BorderRadius.circular(3),
                                   ),
                                 ),
                                 child: _modoLogin
