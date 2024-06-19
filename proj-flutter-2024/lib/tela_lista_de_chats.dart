@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'tela_chat.dart';
 
 final _firebaseAuth = FirebaseAuth.instance;
@@ -20,7 +19,7 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('salas-participantes')
-          .where('email', arrayContains: usuarioAutenticado!.email)
+          .where('email', isEqualTo: usuarioAutenticado!.email)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

@@ -24,7 +24,6 @@ class _TelaLoginState extends State<TelaLogin> {
       debugShowCheckedModeBanner: false,
       home: Builder(builder: (context) {
         return Scaffold(
-          backgroundColor: const Color.fromARGB(255, 30, 100, 32),
           body: Center(
             child: SingleChildScrollView(
               child: Column(
@@ -32,11 +31,10 @@ class _TelaLoginState extends State<TelaLogin> {
                   Container(
                     margin: const EdgeInsets.all(20),
                     width: 200,
-                    child: const Icon(
-                      Icons.message,
-                      size: 200,
-                      color: Colors.white,
-                    ),
+                    child: Image.network(
+                        'https://unicv.edu.br/wp-content/uploads/2020/12/logo-verde-280X100.png',
+                        width: 200,
+                        height: 200),
                   ),
                   Card(
                     margin: const EdgeInsets.all(20),
@@ -130,12 +128,15 @@ class _TelaLoginState extends State<TelaLogin> {
                                                     email: _email,
                                                     password: _senha);
 
+                                        bool validaAdmin(email) {
+                                          return email.startsWith("prof_");                                          
+                                        }
                                         await FirebaseFirestore.instance
                                             .collection('usuarios')
                                             .doc(credenciaisUsuario.user!.uid)
                                             .set({
                                           'email': _email,
-                                          'isAdmin': false,
+                                          'isAdmin': validaAdmin(_email),
                                           'usuario': _nomeUsuario,
                                         });
                                       }
