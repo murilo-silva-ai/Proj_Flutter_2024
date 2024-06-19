@@ -13,6 +13,7 @@ void main() async {
   );
 
   runApp(const MyApp());
+  // await FirebaseMessaging.instance.setAutoInitEnabled(true);
 }
 
 class MyApp extends StatelessWidget {

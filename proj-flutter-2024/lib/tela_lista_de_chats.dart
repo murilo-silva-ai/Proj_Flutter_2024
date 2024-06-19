@@ -19,8 +19,8 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
     final usuarioAutenticado = FirebaseAuth.instance.currentUser;
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('salas')
-          .where('usuarios', arrayContains: usuarioAutenticado!.email)
+          .collection('salas-participantes')
+          .where('email', arrayContains: usuarioAutenticado!.email)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
