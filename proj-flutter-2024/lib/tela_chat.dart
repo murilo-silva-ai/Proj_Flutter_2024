@@ -41,89 +41,81 @@ class _PaginaChatState extends State<TelaChat> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('salas')
-            .doc(widget.chatId)
-            .collection('mensagens')
-            .orderBy('criadoEm', descending: false)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(70, 103, 48, 1),
+        title: const Text('Unicv app'),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('salas')
+                  .doc(widget.chatId)
+                  .collection('mensagens')
+                  .orderBy('criadoEm', descending: false)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('Nenhum chat foi encontrado!'),
-            );
-          }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Text('Nenhum chat foi encontrado!'),
+                  );
+                }
 
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('Erro ao carregar os chats!'),
-            );
-          }
+                final mensagens = snapshot.data!.docs;
 
-          final mensagens = snapshot.data!.docs;
-
-          print(mensagens.first.data());
-
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: const Color.fromRGBO(70, 103, 48, 1),
-              title: const Text(
-                'Unicv app',
-              ),
-              iconTheme: const IconThemeData(color: Colors.white),
+                return ListView.builder(
+                  itemCount: mensagens.length,
+                  itemBuilder: (context, index) {
+                    return Mensagens(
+                      nomeUsuario: mensagens[index]['email'],
+                      conteudoMensagem: mensagens[index]['conteudo'],
+                    );
+                  },
+                );
+              },
             ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: mensagens.length,
-                    itemBuilder: (context, index) {
-                      return Mensagens(
-                        nomeUsuario: mensagens[index].data()['email'],
-                        conteudoMensagem: mensagens[index].data()['conteudo'],
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: 60,
-                  child: isAdmin
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                                child: TextField(
-                              controller: _controladorInput,
-                            )),
-                            IconButton(
-                              onPressed: () {
-                                FirebaseFirestore.instance
-                                    .collection('salas')
-                                    .doc(widget.chatId)
-                                    .collection('mensagens')
-                                    .add({
-                                  'conteudo': _controladorInput.text,
-                                  'email': emailUsuario,
-                                  'criadoEm': Timestamp.now(),
-                                });
-                                _controladorInput.clear();
-                              },
-                              icon: const Icon(Icons.send),
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              ],
-            ),
-          );
-        });
+          ),
+          SizedBox(
+            height: 60,
+            child: isAdmin
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _controladorInput,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          FirebaseFirestore.instance
+                              .collection('salas')
+                              .doc(widget.chatId)
+                              .collection('mensagens')
+                              .add({
+                            'conteudo': _controladorInput.text,
+                            'email': emailUsuario,
+                            'criadoEm': Timestamp.now(),
+                          });
+                          _controladorInput.clear();
+                        },
+                        icon: const Icon(Icons.send),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
   }
 }
