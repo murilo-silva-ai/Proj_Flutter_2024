@@ -60,14 +60,14 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
                 final String nomeSala = salaController.text;
                 if (nomeSala.isNotEmpty) {
                   final docRef = FirebaseFirestore.instance
-                      .collection('salas-participantes')
+                      .collection('salas')
                       .doc(nomeSala);
                   final docSnapshot = await docRef.get();
 
                   if (!docSnapshot.exists) {
                     docRef.set({
                       'nome': nomeSala,
-                      'email': _firebaseAuth.currentUser!.email,
+                      'criador': _firebaseAuth.currentUser!.email,
                     }).then((_) {
                       Navigator.of(context).pop();
                     });
@@ -104,7 +104,7 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
               child: const Text('Excluir'),
               onPressed: () {
                 FirebaseFirestore.instance
-                    .collection('salas-participantes')
+                    .collection('salas')
                     .doc(salaId)
                     .delete()
                     .then((_) {
@@ -125,9 +125,7 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('salas-participantes')
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('salas').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
