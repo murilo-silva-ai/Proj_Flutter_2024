@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'tela_chat.dart';
 
 final _firebaseAuth = FirebaseAuth.instance;
+bool isAdmin = false;
 
 class TelaListaDeChats extends StatefulWidget {
   const TelaListaDeChats({super.key});
@@ -13,6 +14,27 @@ class TelaListaDeChats extends StatefulWidget {
 }
 
 class _TelaListaDeChatsState extends State<TelaListaDeChats> {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserAdminStatus();
+  }
+
+  Future<void> _loadUserAdminStatus() async {
+    final usuarioAutenticado = FirebaseAuth.instance.currentUser;
+    if (usuarioAutenticado != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(usuarioAutenticado.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          isAdmin = doc.data()?['isAdmin'] ?? false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
