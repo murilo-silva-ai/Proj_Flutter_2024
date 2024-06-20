@@ -197,7 +197,7 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
           floatingActionButton: isAdmin
               ? FloatingActionButton(
                   onPressed: _adicionarNovaSala,
-                  backgroundColor: Colors.blue,
+                  backgroundColor: const Color.fromRGBO(217, 148, 38, 1),
                   tooltip: 'Adicionar Nova Sala',
                   child: const Icon(Icons.add),
                 )
