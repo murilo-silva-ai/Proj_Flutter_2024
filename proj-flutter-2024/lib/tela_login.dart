@@ -148,8 +148,10 @@ class _TelaLoginState extends State<TelaLogin> {
                                           'email-already-in-use') {
                                         mensagem = 'Email já utilizado';
                                       }
+                                      // ignore: use_build_context_synchronously
                                       ScaffoldMessenger.of(context)
                                           .clearSnackBars();
+                                      // ignore: use_build_context_synchronously
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

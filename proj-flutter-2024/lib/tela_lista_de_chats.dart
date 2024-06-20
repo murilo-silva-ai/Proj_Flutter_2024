@@ -57,16 +57,16 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
             TextButton(
               child: const Text('Adicionar'),
               onPressed: () async {
-                final String nomeSala = salaController.text;
-                if (nomeSala.isNotEmpty) {
+                final String chatId = salaController.text;
+                if (chatId.isNotEmpty) {
                   final docRef = FirebaseFirestore.instance
                       .collection('salas')
-                      .doc(nomeSala);
+                      .doc(chatId);
                   final docSnapshot = await docRef.get();
 
                   if (!docSnapshot.exists) {
                     docRef.set({
-                      'nome': nomeSala,
+                      'nome': chatId,
                       'criador': _firebaseAuth.currentUser!.email,
                     }).then((_) {
                       Navigator.of(context).pop();

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class Mensagem extends StatelessWidget {
+class Mensagens extends StatelessWidget {
   final String conteudoMensagem;
   final String nomeUsuario;
-  const Mensagem({
+  const Mensagens({
     super.key,
     required this.conteudoMensagem,
     required this.nomeUsuario,
@@ -30,7 +30,7 @@ class Mensagem extends StatelessWidget {
                       nomeUsuario, //Nome do usuario
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: Color.fromARGB(221, 0, 0, 0),
                       ),
                     ),
                   ),
