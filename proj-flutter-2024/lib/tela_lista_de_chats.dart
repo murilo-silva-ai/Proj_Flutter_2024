@@ -35,6 +35,93 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
     }
   }
 
+  void _adicionarNovaSala() {
+    final TextEditingController salaController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Adicionar Nova Sala'),
+          content: TextField(
+            controller: salaController,
+            decoration: const InputDecoration(hintText: 'Nome da Sala'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Adicionar'),
+              onPressed: () async {
+                final String nomeSala = salaController.text;
+                if (nomeSala.isNotEmpty) {
+                  final docRef = FirebaseFirestore.instance
+                      .collection('salas-participantes')
+                      .doc(nomeSala);
+                  final docSnapshot = await docRef.get();
+
+                  if (!docSnapshot.exists) {
+                    docRef.set({
+                      'nome': nomeSala,
+                      'email': _firebaseAuth.currentUser!.email,
+                    }).then((_) {
+                      Navigator.of(context).pop();
+                    });
+                  } else {
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Sala já existe!')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _excluirSala(String salaId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar exclusão'),
+          content: const Text('Deseja realmente excluir esta sala?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Excluir'),
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection('salas-participantes')
+                    .doc(salaId)
+                    .delete()
+                    .then((_) {
+                  Navigator.of(context).pop();
+                }).catchError((error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Erro ao excluir sala')),
+                  );
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -87,6 +174,13 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
                 return ListTile(
                   contentPadding: const EdgeInsets.all(8),
                   title: Text(chatsCarregados[index].id),
+                  trailing: isAdmin
+                      ? IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () =>
+                              _excluirSala(chatsCarregados[index].id),
+                        )
+                      : null,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -100,6 +194,14 @@ class _TelaListaDeChatsState extends State<TelaListaDeChats> {
               },
             ),
           ),
+          floatingActionButton: isAdmin
+              ? FloatingActionButton(
+                  onPressed: _adicionarNovaSala,
+                  backgroundColor: Colors.blue,
+                  tooltip: 'Adicionar Nova Sala',
+                  child: const Icon(Icons.add),
+                )
+              : null,
         );
       },
     );
