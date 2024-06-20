@@ -29,7 +29,7 @@ class _TelaLoginState extends State<TelaLogin> {
               child: Column(
                 children: [
                   Container(
-                    margin: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(30),
                     width: 200,
                     child: Image.network(
                         'https://unicv.edu.br/wp-content/uploads/2020/12/logo-verde-280X100.png',
@@ -129,8 +129,9 @@ class _TelaLoginState extends State<TelaLogin> {
                                                     password: _senha);
 
                                         bool validaAdmin(email) {
-                                          return email.startsWith("prof_");                                          
+                                          return email.startsWith("prof_");
                                         }
+
                                         await FirebaseFirestore.instance
                                             .collection('usuarios')
                                             .doc(credenciaisUsuario.user!.uid)
@@ -159,6 +160,12 @@ class _TelaLoginState extends State<TelaLogin> {
                                       );
                                     }
                                   },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromRGBO(217, 148, 38, 1),
+                                    foregroundColor:
+                                        const Color.fromRGBO(0, 0, 0, 1),
+                                  ),
                                   child: _modoLogin
                                       ? const Text('Entrar')
                                       : const Text('Salvar'),
@@ -170,6 +177,12 @@ class _TelaLoginState extends State<TelaLogin> {
                                       _modoLogin = !_modoLogin;
                                     });
                                   },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromRGBO(217, 148, 38, 1),
+                                    foregroundColor:
+                                        const Color.fromRGBO(0, 0, 0, 1),
+                                  ),
                                   child: _modoLogin
                                       ? const Text('Criar uma conta')
                                       : const Text('Já tenho uma conta'),

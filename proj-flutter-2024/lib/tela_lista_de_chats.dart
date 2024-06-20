@@ -15,11 +15,9 @@ class TelaListaDeChats extends StatefulWidget {
 class _TelaListaDeChatsState extends State<TelaListaDeChats> {
   @override
   Widget build(BuildContext context) {
-    final usuarioAutenticado = FirebaseAuth.instance.currentUser;
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('salas-participantes')
-          .where('email', isEqualTo: usuarioAutenticado!.email)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
