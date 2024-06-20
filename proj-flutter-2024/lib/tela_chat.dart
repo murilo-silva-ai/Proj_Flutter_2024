@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'widgets/mensagens.dart';
+
+final _firebaseAuth = FirebaseAuth.instance;
 
 class TelaChat extends StatefulWidget {
   final String chatId;
@@ -15,6 +16,28 @@ class TelaChat extends StatefulWidget {
 class _PaginaChatState extends State<TelaChat> {
   final emailUsuario = FirebaseAuth.instance.currentUser!.email;
   TextEditingController _controladorInput = TextEditingController();
+  bool isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserAdminStatus();
+  }
+
+  Future<void> _loadUserAdminStatus() async {
+    final usuarioAutenticado = FirebaseAuth.instance.currentUser;
+    if (usuarioAutenticado != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(usuarioAutenticado.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          isAdmin = doc.data()?['isAdmin'] ?? false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +73,7 @@ class _PaginaChatState extends State<TelaChat> {
 
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Color.fromRGBO(70, 103, 48, 1),
+              backgroundColor: const Color.fromRGBO(70, 103, 48, 1),
               title: const Text(
                 'Unicv app',
               ),
@@ -71,30 +94,32 @@ class _PaginaChatState extends State<TelaChat> {
                 ),
                 SizedBox(
                   height: 60,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                          child: TextField(
-                        controller: _controladorInput,
-                      )),
-                      IconButton(
-                        onPressed: () {
-                          FirebaseFirestore.instance
-                              .collection('salas')
-                              .doc(widget.chatId)
-                              .collection('mensagens')
-                              .add({
-                            'conteudo': _controladorInput.text,
-                            'email': emailUsuario,
-                            'criadoEm': Timestamp.now(),
-                          });
-                          _controladorInput.clear();
-                        },
-                        icon: const Icon(Icons.send),
-                      ),
-                    ],
-                  ),
+                  child: isAdmin
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: TextField(
+                              controller: _controladorInput,
+                            )),
+                            IconButton(
+                              onPressed: () {
+                                FirebaseFirestore.instance
+                                    .collection('salas')
+                                    .doc(widget.chatId)
+                                    .collection('mensagens')
+                                    .add({
+                                  'conteudo': _controladorInput.text,
+                                  'email': emailUsuario,
+                                  'criadoEm': Timestamp.now(),
+                                });
+                                _controladorInput.clear();
+                              },
+                              icon: const Icon(Icons.send),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
                 ),
               ],
             ),
